@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        { "name": "Debug Integration Test Vault Storage", "type": "dart", "request": "launch", "program": "vault_manager/Tests/integration_testing/vault_storage_class_integration_test.dart" },
+
+        {
+            "name": "vault_manager",
+            "cwd": "vault_manager",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "vault_manager (profile mode)",
+            "cwd": "vault_manager",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "vault_manager (release mode)",
+            "cwd": "vault_manager",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
