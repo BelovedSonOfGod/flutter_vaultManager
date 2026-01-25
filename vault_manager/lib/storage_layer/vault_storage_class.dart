@@ -3,8 +3,6 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-import 'package:vault_manager/Misc/printing_for_debug_class.dart';
-
 class VaultStorageClass {
   final String appDataDirectory;
   static final String vaultNameTemplate = "vault.vau";
