@@ -33,8 +33,8 @@ class VaultStorageClass {
     return "${this.appDataDirectory}/$metaDataReference";
   }
 
-  Future<bool> vaultExists() async {
-    final File file = File(giveVaultNameReferece());
+  Future<bool> fileExists(String FilePath) async {
+    final File file = File(FilePath);
     return await file.exists();
   }
 
@@ -47,6 +47,6 @@ class VaultStorageClass {
 
   Future<void> writeRawFileBytes(String filePath, Uint8List dataToWrite) async {
     final File file = File(filePath);
-    await file.writeAsBytes(dataToWrite);
+    await file.writeAsBytes(dataToWrite, mode: FileMode.write, flush: false);
   }
 }
