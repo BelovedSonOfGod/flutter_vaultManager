@@ -9,6 +9,8 @@ enum AppStates {
 }
 
 class Orchestrator {
+  AppStates currentstate = AppStates.uninitialized;
+
   AppStates initialize() {
     return AppStates.needsUnlock;
   }
