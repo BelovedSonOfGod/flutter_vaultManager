@@ -5,6 +5,7 @@ import 'package:vault_manager/storage_layer/vault_storage_class.dart';
 enum AppStates {
   //States represent status not action
   uninitialized,
+  needsInitialization,
   needsSetup,
   needsUnlock,
   unlocked,
@@ -16,23 +17,48 @@ enum AppStates {
 class Orchestrator {
   final VaultStorageClass _storageObject;
   AppStates currentstate = AppStates.uninitialized;
-  static Orchestrator? _orchestratorObject;
+  static Orchestrator? orchestratorObject;
   Orchestrator._(this._storageObject);
 
   static Future<Orchestrator> getInstance() async {
-    if (_orchestratorObject == null) {
+    if (orchestratorObject == null) {
       final VaultStorageClass vault = await VaultStorageClass.init();
-      _orchestratorObject = Orchestrator._(vault);
+      final orchestratorObjectLocal = Orchestrator._(vault);
+      orchestratorObjectLocal.currentstate = AppStates.needsInitialization;
     }
 
-    return _orchestratorObject!;
+    return orchestratorObject!;
   }
 
-  AppStates initialize() {
-    return AppStates.needsUnlock;
+  Future<AppStates> initialize() async {
+    if (currentstate != AppStates.needsInitialization) {
+      currentstate = AppStates.error;
+    } else {
+      try {
+        final bool vaultExists = await _storageObject.fileExists(
+          _storageObject.giveVaultNameReferece(),
+        );
+
+        if (vaultExists) {
+          currentstate = AppStates.needsSetup;
+        } else {
+          currentstate = AppStates.needsUnlock;
+        }
+      } catch (e) {
+        currentstate = AppStates.error;
+      }
+    }
+
+    return currentstate;
   }
 
-  AppStates createVault() {}
+  Future<AppStates> createVault() async {
+    if (currentstate != AppStates.needsSetup) {
+      currentstate = AppStates.error;
+    }
+
+    return currentstate;
+  }
 
   AppStates unlockVault() {}
 }
