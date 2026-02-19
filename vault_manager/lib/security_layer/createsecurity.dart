@@ -1,5 +1,5 @@
 class CreateSecurity {
-  String generateSalt() {
+  static String generateSalt() {
     String salt = "hola";
     return salt;
   }
