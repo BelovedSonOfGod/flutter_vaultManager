@@ -1,5 +1,6 @@
 //Orchestrates storage layer, security layer and domain layer for UI to use
-import 'package:flutter/foundation.dart';
+import 'package:vault_manager/domain_layer/vaultcreation.dart';
+import 'package:vault_manager/security_layer/createsecurity.dart';
 import 'package:vault_manager/storage_layer/vault_storage_class.dart';
 
 enum AppStates {
@@ -56,6 +57,16 @@ class Orchestrator {
     if (currentstate != AppStates.needsSetup) {
       currentstate = AppStates.error;
     }
+    String salt = CreateSecurity.generateSalt();
+    Map<String, String> kdfParameters = CreateSecurity.generateKDFParameters();
+    Map<String, dynamic> vaultJSON = VaultCreation.createVaultFileStructure(
+      kdfParameters,
+      "",
+    );
+    _storageObject.writeRawFileBytes(
+      _storageObject.giveVaultNameReferece(),
+      VaultCreation.convertMapToUInt8List(vaultJSON),
+    );
 
     return currentstate;
   }

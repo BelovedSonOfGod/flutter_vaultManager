@@ -5,10 +5,6 @@ class CreateSecurity {
   }
 
   static Map<String, String> generateKDFParameters() {
-    return <String, String>{
-      'index.html': 'Homepage',
-      'robots.txt': 'Hints for web robots',
-      'humans.txt': 'We are people, not machines',
-    };
+    return <String, String>{'length': '16', 'iterations': '1000'};
   }
 }
