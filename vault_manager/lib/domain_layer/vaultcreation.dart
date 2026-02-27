@@ -13,22 +13,17 @@ class VaultCreation {
 
   static Map<String, dynamic> createVaultFileStructure(
     Map<String, String> metadata,
-    String payload,
+    Map<String, String> payload,
   ) {
     Map<String, dynamic> vaultStructure = {
       "vault": 1,
       "version": 1,
       "metadata": {},
-      "payload": {"nonce": ""},
+      "payload": {"nonce": "", "ciphertext": "dummy_ciphertext"},
     };
-    ;
-    if (metadata != null) {
-      vaultStructure["metadata"] = metadata;
-    }
 
-    if (payload != null) {
-      vaultStructure["payload"] = payload;
-    }
+    vaultStructure["metadata"] = metadata;
+    vaultStructure["payload"] = payload;
 
     return vaultStructure;
   }

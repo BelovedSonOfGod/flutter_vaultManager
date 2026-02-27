@@ -26,6 +26,7 @@ class Orchestrator {
       final VaultStorageClass vault = await VaultStorageClass.init();
       final orchestratorObjectLocal = Orchestrator._(vault);
       orchestratorObjectLocal.currentstate = AppStates.needsInitialization;
+      orchestratorObject = orchestratorObjectLocal;
     }
 
     return orchestratorObject!;
@@ -40,7 +41,7 @@ class Orchestrator {
           _storageObject.giveVaultNameReferece(),
         );
 
-        if (vaultExists) {
+        if (!vaultExists) {
           currentstate = AppStates.needsSetup;
         } else {
           currentstate = AppStates.needsUnlock;
@@ -63,7 +64,7 @@ class Orchestrator {
       kdfParameters,
       "",
     );
-    _storageObject.writeRawFileBytes(
+    await _storageObject.writeRawFileBytes(
       _storageObject.giveVaultNameReferece(),
       VaultCreation.convertMapToUInt8List(vaultJSON),
     );
