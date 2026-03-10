@@ -18,13 +18,9 @@ class VaultCreation {
     Map<String, dynamic> vaultStructure = {
       "vault": 1,
       "version": 1,
-      "metadata": {},
-      "payload": {"nonce": "", "ciphertext": "dummy_ciphertext"},
+      "metadata": metadata,
+      "payload": payload,
     };
-
-    vaultStructure["metadata"] = metadata;
-    vaultStructure["payload"] = payload;
-
     return vaultStructure;
   }
 

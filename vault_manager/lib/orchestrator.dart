@@ -33,22 +33,18 @@ class Orchestrator {
   }
 
   Future<AppStates> initialize() async {
-    if (currentstate != AppStates.needsInitialization) {
-      currentstate = AppStates.error;
-    } else {
-      try {
-        final bool vaultExists = await _storageObject.fileExists(
-          _storageObject.giveVaultNameReferece(),
-        );
+    try {
+      final bool vaultExists = await _storageObject.fileExists(
+        _storageObject.giveVaultNameReferece(),
+      );
 
-        if (!vaultExists) {
-          currentstate = AppStates.needsSetup;
-        } else {
-          currentstate = AppStates.needsUnlock;
-        }
-      } catch (e) {
-        currentstate = AppStates.error;
+      if (!vaultExists) {
+        currentstate = AppStates.needsSetup;
+      } else {
+        currentstate = AppStates.needsUnlock;
       }
+    } catch (e) {
+      currentstate = AppStates.error;
     }
 
     return currentstate;
@@ -56,21 +52,30 @@ class Orchestrator {
 
   Future<AppStates> createVault() async {
     if (currentstate != AppStates.needsSetup) {
-      currentstate = AppStates.error;
+      return AppStates.error;
     }
     String salt = CreateSecurity.generateSalt();
+    Map<String, String> payload = {
+      //En algun momento esto se encargara la parte de security
+      "nonce": "dummy_nonce",
+      "ciphertext": "dummy_ciphertext",
+    };
     Map<String, String> kdfParameters = CreateSecurity.generateKDFParameters();
     Map<String, dynamic> vaultJSON = VaultCreation.createVaultFileStructure(
       kdfParameters,
-      "",
+      payload,
     );
     await _storageObject.writeRawFileBytes(
       _storageObject.giveVaultNameReferece(),
       VaultCreation.convertMapToUInt8List(vaultJSON),
     );
 
+    currentstate = AppStates.needsUnlock;
+
     return currentstate;
   }
 
-  AppStates unlockVault() {}
+  AppStates unlockVault() {
+    return AppStates.error;
+  }
 }
