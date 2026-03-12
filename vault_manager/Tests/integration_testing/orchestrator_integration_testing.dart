@@ -14,7 +14,7 @@ void main() {
 
   test("Create vault", () async {
     AppStates state = await testingOrchestrator.initialize();
-    state = await testingOrchestrator.createVault();
+    state = await testingOrchestrator.createVault("passwordTest");
     expect(state, equals(AppStates.needsUnlock));
   });
 }

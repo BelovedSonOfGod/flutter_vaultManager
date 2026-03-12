@@ -12,7 +12,7 @@ class VaultCreation {
   ];
 
   static Map<String, dynamic> createVaultFileStructure(
-    Map<String, String> metadata,
+    Map<String, dynamic> metadata,
     Map<String, String> payload,
   ) {
     Map<String, dynamic> vaultStructure = {

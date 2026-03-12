@@ -1,4 +1,6 @@
 //Orchestrates storage layer, security layer and domain layer for UI to use
+//import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
+import 'dart:typed_data';
 import 'package:vault_manager/domain_layer/vaultcreation.dart';
 import 'package:vault_manager/security_layer/createsecurity.dart';
 import 'package:vault_manager/storage_layer/vault_storage_class.dart';
@@ -50,17 +52,29 @@ class Orchestrator {
     return currentstate;
   }
 
-  Future<AppStates> createVault() async {
+  Future<AppStates> createVault(String password) async {
     if (currentstate != AppStates.needsSetup) {
       return AppStates.error;
     }
-    String salt = CreateSecurity.generateSalt();
-    Map<String, String> payload = {
-      //En algun momento esto se encargara la parte de security
-      "nonce": "dummy_nonce",
-      "ciphertext": "dummy_ciphertext",
-    };
-    Map<String, String> kdfParameters = CreateSecurity.generateKDFParameters();
+    String salt = CreateSecurity.generateRandomNumber();
+    String nonce = CreateSecurity.generateRandomNumber();
+    Map<String, String> plainTextPayload = {};
+    Map<String, dynamic> kdfParameters = CreateSecurity.generateKDFParameters();
+    kdfParameters["salt"] = salt;
+
+    Uint8List derivedKey = CreateSecurity.deriveKey(
+      password,
+      salt,
+      kdfParameters,
+    );
+    String ciphertext = CreateSecurity.encrypt(
+      plainTextPayload,
+      derivedKey,
+      nonce,
+    );
+
+    Map<String, String> payload = {"nonce": nonce, "ciphertext": ciphertext};
+
     Map<String, dynamic> vaultJSON = VaultCreation.createVaultFileStructure(
       kdfParameters,
       payload,
