@@ -134,6 +134,6 @@ class Orchestrator {
       derivedKey,
     );
 
-    return AppStates.error;
+    return AppStates.unlocked;
   }
 }
