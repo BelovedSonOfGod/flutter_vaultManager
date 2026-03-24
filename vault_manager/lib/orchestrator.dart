@@ -20,13 +20,15 @@ enum AppStates {
 class Orchestrator {
   final VaultStorageClass _storageObject;
   AppStates currentstate = AppStates.uninitialized;
+  Uint8List? _encryptionKey;
   static Orchestrator? orchestratorObject;
-  Orchestrator._(this._storageObject);
+
+  Orchestrator._(this._storageObject, this._encryptionKey);
 
   static Future<Orchestrator> getInstance() async {
     if (orchestratorObject == null) {
       final VaultStorageClass vault = await VaultStorageClass.init();
-      final orchestratorObjectLocal = Orchestrator._(vault);
+      final orchestratorObjectLocal = Orchestrator._(vault, null);
       orchestratorObjectLocal.currentstate = AppStates.needsInitialization;
       orchestratorObject = orchestratorObjectLocal;
     }
@@ -53,6 +55,9 @@ class Orchestrator {
   }
 
   Future<AppStates> createVault(String password) async {
+    //salt : Random number generated at the vault creation and each time the vault is encrypted
+    //nonce: Random number at the vault creation
+    //KDF parameters needed to derive the master password and then with that, encrypt the vault. Also known as metadata
     if (currentstate != AppStates.needsSetup) {
       return AppStates.error;
     }
@@ -89,7 +94,46 @@ class Orchestrator {
     return currentstate;
   }
 
-  AppStates unlockVault() {
+  Future<AppStates> unlockVault(String receivedPasswordFrmUsr) async {
+    if (currentstate != AppStates.needsUnlock) {
+      return AppStates.error;
+    }
+
+    //Read vault contents
+
+    Uint8List rawFileContents = await _storageObject.readRawFileBytes(
+      _storageObject.giveVaultNameReferece(),
+    );
+
+    //Parse the data
+    String stringFileContents = VaultCreation.convertUInt8ListToString(
+      rawFileContents,
+    );
+    Map<String, dynamic> fileStructure = VaultCreation.readVaultFileStructure(
+      stringFileContents,
+    );
+
+    //Get the metadata
+
+    Map<String, dynamic> mapMetadata = VaultCreation.convertStringToMapStrDyn(
+      fileStructure["metadata"],
+    );
+
+    //desencrypt and recalculate the match between passwords
+
+    Uint8List derivedKey = CreateSecurity.deriveKey(
+      receivedPasswordFrmUsr,
+      mapMetadata["salt"],
+      mapMetadata,
+    );
+
+    //Get the payload/passwords information
+
+    _encryptionKey = CreateSecurity.desencrypt(
+      mapMetadata["payload"],
+      derivedKey,
+    );
+
     return AppStates.error;
   }
 }

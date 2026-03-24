@@ -28,6 +28,10 @@ class VaultCreation {
     return utf8.decode(filecontents);
   }
 
+  static Map<String, dynamic> convertStringToMapStrDyn(String stringToConvert) {
+    return json.decode(stringToConvert) as Map<String, dynamic>;
+  }
+
   static Uint8List convertMapToUInt8List<K, V extends Object?>(Map<K, V> map) {
     //Needs to be specified before so the compiler knows that K, V are generic, and extends is to specifiy is Object, which is the only required for JSON
     String data = jsonEncode(map);

@@ -19,6 +19,10 @@ class CreateSecurity {
     return "ImEncryptedText";
   }
 
+  static Uint8List desencrypt(String cipherText, Uint8List key) {
+    return utf8.encode("ImDesEncryptedText");
+  }
+
   static Uint8List deriveKey(
     String password,
     String salt,
